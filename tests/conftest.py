@@ -1,7 +1,25 @@
 import pytest
+import os
 from selene import browser
 from selenium import webdriver
+from dotenv import load_dotenv
 from selenium.webdriver.chrome.options import Options
+from pageobject.authorization_page import Authorization
+
+@pytest.fixture(scope="session", autouse=True)
+def load_env():
+    load_dotenv()
+
+@pytest.fixture
+def auth_credentials():
+    return {
+        'email': os.getenv('EMAIL'),
+        'password': os.getenv('PASSWORD')
+    }
+
+@pytest.fixture
+def authorization(auth_credentials):
+    return Authorization(auth_credentials)
 
 @pytest.fixture(scope="session", autouse=True)
 def global_browser():

@@ -1,8 +1,9 @@
-from selene import browser, have
+from selene import browser
 import allure
 
-
 class Authorization:
+    def __init__(self, credentials):
+        self.credentials = credentials
 
     @allure.step('Открытие страницы')
     def open_authorization_page(self):
@@ -24,9 +25,9 @@ class Authorization:
     def authorization_ya(self):
         browser.element('[data-transaction-name="ga-auth-modal-auth-services"]').click()
         browser.element('button.LoginWithPhonePage-button').click()
-        browser.element('[data-t="field:input-login"]').type('email')
+        browser.element('[data-t="field:input-login"]').type(self.credentials['email'])
         browser.element('#passp\\:sign-in').click()
-        browser.element('#passp-field-passwd').type('pass')
+        browser.element('#passp-field-passwd').type(self.credentials['password'])
         browser.element('#passp\\:sign-in').click()
         browser.element('//button[.//span[text()="Войти как SummerSTR"]]').click()
         return self
@@ -40,5 +41,3 @@ class Authorization:
     @allure.step('Проверка успешной авторизации')
     def assert_successful_authorization(self):
         assert browser.driver.current_url == 'https://goldapple.ru/customer/account/orders'
-
-authorization = Authorization()
