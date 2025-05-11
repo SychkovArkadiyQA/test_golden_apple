@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.options import Options
 def global_browser():
     # Настройки Selene
     browser.config.base_url = "https://goldapple.ru/"
-    browser.config.timeout = 20.0
+    browser.config.timeout = 200.0
     browser.config.window_width = 1280
     browser.config.window_height = 1024
 
