@@ -8,6 +8,7 @@ __pycache__/
 .venv
 .env
 .tests/allure-results
+.allure-results
 # Distribution / packaging
 .Python
 build/
