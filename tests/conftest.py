@@ -34,9 +34,26 @@ def global_browser():
     browser.config.timeout = 10.0
     browser.config.window_width = 1280
     browser.config.window_height = 1024
+    browser_version = request.config.getoption('--browser_version')
 
     # Основные настройки для блокировки всплывающих окон
     options = Options()
+    selenoid_capabilities = {
+        "browserName": "chrome",
+        "browserVersion": browser_version,
+        "selenoid:options": {
+            "enableVNC": True,
+            "enableVideo": True
+        }
+    }
+    options.capabilities.update(selenoid_capabilities)
+    selenoid_login = os.getenv("SELENOID_LOGIN")
+    selenoid_pass = os.getenv("SELENOID_PASS")
+    selenoid_url = os.getenv("SELENOID_URL")
+    driver = webdriver.Remote(
+        command_executor=f"https://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub",
+        options=options
+    )
     options.add_argument("--disable-notifications")  # Отключает уведомления
     options.add_argument("--disable-popup-blocking")  # Блокирует всплывающие окна
     options.add_argument("--disable-infobars")  # Отключает инфобары
