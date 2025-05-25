@@ -10,6 +10,14 @@ from pageobject.authorization_page import Authorization
 def load_env():
     load_dotenv()
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--browser_version",
+        action="store",
+        default="128",  # значение по умолчанию
+        help="Specify browser version for tests"
+    )
+
 
 @pytest.fixture
 def auth_credentials():
@@ -23,7 +31,8 @@ def authorization(auth_credentials):
     return Authorization(auth_credentials)
 
 @pytest.fixture(scope="session", autouse=True)
-def global_browser():
+def global_browser(request):
+    browser_version = request.config.getoption("--browser_version")
     # Настройки Selene
     browser.config.base_url = "https://goldapple.ru/"
     browser.config.timeout = 10.0
