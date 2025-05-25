@@ -10,6 +10,12 @@ from pageobject.authorization_page import Authorization
 def load_env():
     load_dotenv()
 
+def pytest_addoption(parser):
+    parser.addoption(
+        '--browser_version',
+        default='128.0'
+    )
+
 @pytest.fixture
 def auth_credentials():
     return {
