@@ -1,4 +1,6 @@
-from selene import browser, have, be
+import time
+
+from selene import browser, have, be, command
 import allure
 
 class Contact:
@@ -16,8 +18,7 @@ class Contact:
 
     @allure.step('Переход на страницу контактной информации')
     def search_contact_info(self):
-        browser.with_(timeout=10).execute_script("window.scrollTo(0, document.body.scrollHeight)")
-        browser.element('a[href="/contacts#key-contacts"]').click()
+        browser.element('a[href="/contacts#key-contacts"]').perform(command.js.click)
         return self
 
     @allure.step('Проверка контактов')
