@@ -16,6 +16,7 @@ load_dotenv(env_path)
 def load_env():
     load_dotenv()
 
+
 def pytest_addoption(parser):
     parser.addoption(
         "--browser_version",
@@ -24,6 +25,7 @@ def pytest_addoption(parser):
         help="Specify browser version for tests"
     )
 
+
 @pytest.fixture
 def auth_credentials():
     return {
@@ -31,12 +33,22 @@ def auth_credentials():
         'password': os.getenv('PASSWORD')
     }
 
+
 @pytest.fixture
 def authorization(auth_credentials):
     return Authorization(auth_credentials)
 
+
 @pytest.fixture(scope="session", autouse=True)
 def global_browser(request):
+    # Проверка обязательных переменных окружения
+    selenoid_login = os.getenv("SELENOID_LOGIN")
+    selenoid_pass = os.getenv("SELENOID_PASS")
+    selenoid_url = os.getenv("SELENOID_URL")
+
+    if not all([selenoid_login, selenoid_pass, selenoid_url]):
+        pytest.fail(
+            "Selenoid credentials not configured. Set SELENOID_LOGIN, SELENOID_PASS and SELENOID_URL environment variables.")
 
     # Настройки Selene
     browser.config.base_url = "https://goldapple.ru/"
@@ -44,35 +56,10 @@ def global_browser(request):
     browser.config.window_width = 1280
     browser.config.window_height = 1024
 
-    selenoid_login = os.getenv("SELENOID_LOGIN")
-    selenoid_pass = os.getenv("SELENOID_PASS")
-    selenoid_url = os.getenv("SELENOID_URL")
-
     browser_version = request.config.getoption("--browser_version")
     options = Options()
 
-    selenoid_capabilities = {
-        "browserName": 'chrome',
-        "browserVersion": browser_version,
-        "selenoid:options": {
-            "enableVNC": True,
-            "enableVideo": True
-        }
-    }
-    options.capabilities.update(selenoid_capabilities)
-
-    driver = webdriver.Remote(
-        command_executor=f'https://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub',
-        options=options
-    )
-
-    browser.config.driver = driver
-    browser.config.window_height = 1080
-    browser.config.window_width = 1920
-    browser.config.base_url = "https://goldapple.ru/"
-
     # Основные настройки для блокировки всплывающих окон
-    options = Options()
     options.add_argument("--disable-notifications")  # Отключает уведомления
     options.add_argument("--disable-popup-blocking")  # Блокирует всплывающие окна
     options.add_argument("--disable-infobars")  # Отключает инфобары
@@ -85,7 +72,6 @@ def global_browser(request):
     )
 
     # Настройки ChromeOptions
-    options = webdriver.ChromeOptions()
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationExtension", False)
@@ -93,10 +79,30 @@ def global_browser(request):
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
-    # Инициализация драйвера
-    browser.config.driver = webdriver.Chrome(options=options)
-    browser.config.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+    # Настройки Selenoid
+    selenoid_capabilities = {
+        "browserName": 'chrome',
+        "browserVersion": browser_version,
+        "selenoid:options": {
+            "enableVNC": True,
+            "enableVideo": True
+        }
+    }
+    options.capabilities.update(selenoid_capabilities)
 
+    # Инициализация драйвера для Selenoid
+    driver = webdriver.Remote(
+        command_executor=f'https://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub',
+        options=options
+    )
+
+    browser.config.driver = driver
+    browser.config.window_height = 1080
+    browser.config.window_width = 1920
+    browser.config.base_url = "https://goldapple.ru/"
+
+    # Скрываем WebDriver для обхода детекции
+    browser.config.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 
     # Открываем базовую страницу
     browser.open("/")
@@ -105,4 +111,3 @@ def global_browser(request):
 
     # Закрытие браузера после всех тестов
     browser.quit()
-
