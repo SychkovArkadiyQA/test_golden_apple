@@ -87,22 +87,6 @@ def global_browser(request):
     browser.config.driver = webdriver.Chrome(options=options)
     browser.config.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 
-    selenoid_capabilities = {
-        "browserName": 'chrome',
-        "browserVersion": browser_version,
-        "selenoid:options": {
-            "enableVNC": True,
-            "enableVideo": True
-        }
-    }
-    options.capabilities.update(selenoid_capabilities)
-
-    driver = webdriver.Remote(
-        command_executor=f'https://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub',
-        options=options
-    )
-
-
     # Открываем базовую страницу
     browser.open("/")
 
