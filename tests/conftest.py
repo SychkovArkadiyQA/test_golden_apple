@@ -2,19 +2,20 @@ import pytest
 import os
 from selene import browser
 from selenium import webdriver
-from dotenv import load_dotenv
 from selenium.webdriver.chrome.options import Options
-from pageobject.authorization_page import Authorization
+from dotenv import load_dotenv
+
 
 @pytest.fixture(scope="session", autouse=True)
 def load_env():
     load_dotenv()
 
+
 def pytest_addoption(parser):
     parser.addoption(
         "--browser_version",
         action="store",
-        default="128",  # значение по умолчанию
+        default="128",
         help="Specify browser version for tests"
     )
 
@@ -26,72 +27,57 @@ def auth_credentials():
         'password': os.getenv('PASSWORD')
     }
 
+
 @pytest.fixture
 def authorization(auth_credentials):
     return Authorization(auth_credentials)
 
-@pytest.fixture(scope="session", autouse=True)
-def global_browser(request):
+
+@pytest.fixture(scope="function")  # Изменено с session на function
+def setup_browser(request):
     browser_version = request.config.getoption("--browser_version")
-    # Настройки Selene
-    browser.config.base_url = "https://goldapple.ru/"
-    browser.config.timeout = 10.0
-    browser.config.window_width = 1280
-    browser.config.window_height = 1024
 
-    selenoid_login = os.getenv("SELENOID_LOGIN")
-    selenoid_pass = os.getenv("SELENOID_PASS")
-    selenoid_url = os.getenv("SELENOID_URL")
-
-    browser_version = request.config.getoption('--browser_version')
+    # Общие настройки для браузера
     options = Options()
 
-    selenoid_capabilities = {
-        "browserName": 'chrome',
-        "browserVersion": browser_version,
-        "selenoid:options": {
-            "enableVNC": True,
-            "enableVideo": True
-        }
-    }
-    options.capabilities.update(selenoid_capabilities)
-
-    driver = webdriver.Remote(
-        command_executor=f'https://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub',
-        options=options
-    )
-
-    # Основные настройки для блокировки всплывающих окон
-    options = Options()
-    options.add_argument("--disable-notifications")  # Отключает уведомления
-    options.add_argument("--disable-popup-blocking")  # Блокирует всплывающие окна
-    options.add_argument("--disable-infobars")  # Отключает инфобары
+    # Блокировка всплывающих окон и уведомлений
+    options.add_argument("--disable-notifications")
+    options.add_argument("--disable-popup-blocking")
+    options.add_argument("--disable-infobars")
     options.add_experimental_option(
         "prefs", {
-            "profile.default_content_setting_values.notifications": 2,  # Блокировка уведомлений
-            "profile.default_content_setting_values.popups": 0,  # Блокировка popup
-            "profile.default_content_setting_values.geolocation": 2,  # Блокировка геолокации
+            "profile.default_content_setting_values.notifications": 2,
+            "profile.default_content_setting_values.popups": 0,
+            "profile.default_content_setting_values.geolocation": 2,
         }
     )
 
-    # Настройки ChromeOptions
-    options = webdriver.ChromeOptions()
+    # Настройки для обхода детекции автоматизации
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationExtension", False)
     options.add_argument(
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+        "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    )
 
-    # Инициализация драйвера
-    browser.config.driver = webdriver.Chrome(options=options)
-    browser.config.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+    # Инициализация браузера
+    browser.config.driver_options = options
+    browser.config.base_url = "https://goldapple.ru/"
+    browser.config.timeout = 10.0
+    browser.config.window_width = 1280
+    browser.config.window_height = 1024
 
-    # Открываем базовую страницу
+    # Открытие базовой страницы
     browser.open("/")
 
-    yield  # Все тесты выполняются здесь
+    yield browser
 
-    # Закрытие браузера после всех тестов
+    # Очистка куков и закрытие браузера после каждого теста
+    browser.clear_cookies()
     browser.quit()
 
+
+@pytest.fixture
+def app(setup_browser):
+    yield setup_browser
