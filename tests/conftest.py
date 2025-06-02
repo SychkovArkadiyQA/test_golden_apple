@@ -39,6 +39,28 @@ def global_browser(request):
     browser.config.window_width = 1280
     browser.config.window_height = 1024
 
+    selenoid_login = os.getenv("SELENOID_LOGIN")
+    selenoid_pass = os.getenv("SELENOID_PASS")
+    selenoid_url = os.getenv("SELENOID_URL")
+
+    browser_version = request.config.getoption('--browser_version')
+    options = Options()
+
+    selenoid_capabilities = {
+        "browserName": 'chrome',
+        "browserVersion": browser_version,
+        "selenoid:options": {
+            "enableVNC": True,
+            "enableVideo": True
+        }
+    }
+    options.capabilities.update(selenoid_capabilities)
+
+    driver = webdriver.Remote(
+        command_executor=f'https://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub',
+        options=options
+    )
+
     # Основные настройки для блокировки всплывающих окон
     options = Options()
     options.add_argument("--disable-notifications")  # Отключает уведомления
@@ -64,6 +86,22 @@ def global_browser(request):
     # Инициализация драйвера
     browser.config.driver = webdriver.Chrome(options=options)
     browser.config.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+
+    selenoid_capabilities = {
+        "browserName": 'chrome',
+        "browserVersion": browser_version,
+        "selenoid:options": {
+            "enableVNC": True,
+            "enableVideo": True
+        }
+    }
+    options.capabilities.update(selenoid_capabilities)
+
+    driver = webdriver.Remote(
+        command_executor=f'https://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub',
+        options=options
+    )
+
 
     # Открываем базовую страницу
     browser.open("/")
