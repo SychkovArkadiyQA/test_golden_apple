@@ -24,7 +24,7 @@ class Cart:
     def add_2_to_cart(self):
         browser.element(by.text('добавить в корзину')).click()
         time.sleep(2)
-        browser.element('button svg[viewBox="0 0 15 15"]').click()
+        browser.element('//*[contains(., "шт.")]').click()
         return self
 
     @allure.step('Переход к корзину')
