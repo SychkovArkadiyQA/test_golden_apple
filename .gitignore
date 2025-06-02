@@ -6,7 +6,7 @@ __pycache__/
 # C extensions
 *.so
 .venv
-tests/.env
+.env
 .tests/allure-results
 .allure-results
 .idea
@@ -132,7 +132,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-tests/.env
+.env
 .venv
 env/
 venv/

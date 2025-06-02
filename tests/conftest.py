@@ -5,6 +5,11 @@ from selenium import webdriver
 from dotenv import load_dotenv
 from selenium.webdriver.chrome.options import Options
 from pageobject.authorization_page import Authorization
+from pathlib import Path
+
+# Явно указываем путь к .env в корне проекта
+env_path = Path(__file__).parent.parent / '.env'
+load_dotenv(env_path)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -18,7 +23,6 @@ def pytest_addoption(parser):
         default="128",  # значение по умолчанию
         help="Specify browser version for tests"
     )
-
 
 @pytest.fixture
 def auth_credentials():
