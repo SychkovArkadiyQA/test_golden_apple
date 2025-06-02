@@ -16,7 +16,7 @@ class Search:
 
     @allure.step('Тап по поиску')
     def search_tap(self):
-        browser.element('button._15pyi.ga-header__tab_type_search').click()
+        browser.element('button.ga-header__tab_type_search').click()
         return self
 
     @allure.step('Ввод названия товара')
