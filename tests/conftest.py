@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from selenium.webdriver.chrome.options import Options
 from pageobject.authorization_page import Authorization
 from pathlib import Path
+from utils import attach
 
 # Явно указываем путь к .env в корне проекта
 env_path = Path(__file__).parent.parent / '.env'
@@ -108,6 +109,10 @@ def global_browser(request):
     browser.open("/")
 
     yield  # Все тесты выполняются здесь
+
+    attach.add_screenshot(browser)
+    attach.add_html(browser)
+    attach.add_video(browser)
 
     # Закрытие браузера после всех тестов
     browser.quit()
