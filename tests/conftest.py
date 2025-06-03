@@ -98,8 +98,8 @@ def global_browser(request):
     )
 
     browser.config.driver = driver
-    browser.config.window_height = 1280
-    browser.config.window_width = 1024
+    browser.config.window_height = 1024
+    browser.config.window_width = 1280
     browser.config.base_url = "https://goldapple.ru/"
 
     # Скрываем WebDriver для обхода детекции
