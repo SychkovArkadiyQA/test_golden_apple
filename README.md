@@ -1,14 +1,5 @@
 # Проект UI автотестов Python
 
-<img width="1469" alt="image" src="https://github.com/user-attachments/assets/60d2b042-4a78-45d2-8d2f-8aa0e3313890" />
-
-<img width="1470" alt="image" src="https://github.com/user-attachments/assets/8e8ec441-7f0c-4f68-8803-9339b27431ac" />
-
-<img width="427" alt="image" src="https://github.com/user-attachments/assets/b0c98ecc-ad41-4af8-bf6f-935eb38cb776" />
-
-
-
-
 
 <h2 align="center"> Automation </h2>
 <p align="center">
