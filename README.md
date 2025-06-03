@@ -1,5 +1,9 @@
 # Проект UI автотестов Python
 
+<img width="1469" alt="image" src="https://github.com/user-attachments/assets/60d2b042-4a78-45d2-8d2f-8aa0e3313890" />
+
+
+
 <h2 align="center"> Automation </h2>
 <p align="center">
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" height='50'  width='50' />&nbsp;&nbsp;
