@@ -23,8 +23,8 @@ class Store:
     @allure.step('Проверка успешно установленного адреса')
     def assert_successful_choose_address(self):
         assert browser.driver.current_url == 'https://goldapple.ru/'
-        assert browser.element('div.otHS4').should(have.text('Мира'))
-        assert browser.element('div.otHS4').should(have.text('1'))
+        assert browser.element('[data-transaction-name="ga-home-location-bar"]').should(have.text('Мира'))
+        assert browser.element('[data-transaction-name="ga-home-location-bar"]').should(have.text('1'))
 
 store = Store()
 
